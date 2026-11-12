@@ -1,0 +1,16 @@
+name: MaceSMPTracker
+version: 1.0.0
+main: dev.macesmp.tracker.MaceSMPTracker
+api-version: '26.1'
+description: Tracks every Mace and enforces a global limit on how many can exist at once.
+authors: [MaceSMP]
+commands:
+  macesmp:
+    description: Administer the Mace limit and tracker.
+    usage: /<command> <limit|status|recount|reload|list>
+    permission: macesmp.admin
+    aliases: [mace]
+permissions:
+  macesmp.admin:
+    description: Use the /macesmp administration commands.
+    default: op

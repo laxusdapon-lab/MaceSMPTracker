@@ -1,0 +1,85 @@
+# ===========================================================================
+#  MaceSMPTracker configuration
+#  Edit, save, then run /macesmp reload in game or in the console.
+#  /macesmp limit <number> also writes global-mace-limit below for you.
+# ===========================================================================
+
+# How many Maces may exist at the same time in the whole world.
+# This is NOT a lifetime limit: when a Mace breaks, burns, despawns or is otherwise destroyed,
+# its slot becomes free and somebody can craft a new one. Default: 3
+global-mace-limit: 3
+
+# Stop the automatic Crafter block from ever producing a Mace. Normal crafting tables still work.
+block-crafter: true
+
+# --- What the tracker looks at -------------------------------------------------------------
+# Online players: main inventory, armor, offhand and the item on the cursor.
+track-player-inventories: true
+# Ender chests of online players (offline ones are covered by /macesmp recount).
+track-ender-chests: true
+# Chests, double chests, barrels, shulker boxes (also inside inventories), hoppers, droppers,
+# furnaces and every other block that holds items, plus chest minecarts, chest boats and horse chests.
+track-containers: true
+# Mace item entities lying on the ground.
+track-dropped-items: true
+# Item frames and mobs that hold or wear a Mace.
+track-entities: true
+
+# --- Saving ----------------------------------------------------------------------------------
+# Save the registry (plugins/MaceSMPTracker/registry.tsv) in the background whenever something changed.
+# If false the registry is only written on shutdown and after /macesmp recount, so a crash can lose changes.
+save-data-automatically: true
+save-interval-seconds: 30
+
+# --- Maces that did not come from the tracker -----------------------------------------------
+# A Mace with no tracker id (from /give, creative mode, a trial vault, an old save, ...) was not forged
+# through the crafting table. What to do when one is found in a loaded area:
+#   REGISTER - give it an id and count it toward the limit (default, nothing is deleted)
+#   REMOVE   - delete it
+#   IGNORE   - leave it alone and do not count it
+untracked-mace-policy: REGISTER
+
+# A Mace that was marked destroyed but is found again (for example because a removal was misread):
+#   REACTIVATE - count it as active again (default)
+#   REMOVE     - delete it
+destroyed-mace-reappears: REACTIVATE
+
+# --- Background sweep ---------------------------------------------------------------------------
+# Every few minutes the plugin looks at all online players and all loaded chunks. It removes
+# duplicated Maces (the same id in two places at the same moment) and applies the policies above.
+# The work is spread over several ticks so it does not cause lag.
+sweep:
+  interval-seconds: 120     # 0 = turn the sweep off
+  chunks-per-tick: 8        # lower this if you ever see lag during a sweep
+
+# --- /macesmp recount ---------------------------------------------------------------------------
+audit:
+  save-worlds-first: true       # save the world before reading files so the files are current
+  scan-offline-players: true    # read the .dat files of players who are offline
+  scan-region-files: true       # read the chunk and entity files of the whole world (also unloaded chunks)
+  # If true, a Mace that is found NOWHERE (not online, not offline, not in any chunk file) for several
+  # audits in a row is treated as destroyed and its slot is freed. Keep this FALSE if any other plugin
+  # can store items (team/guild ender chests, backpacks, vaults, mailboxes): the tracker cannot see inside
+  # them and would wrongly free a slot. Slots are always freed by the normal events (break, burn,
+  # despawn, void, explosion) regardless of this setting.
+  free-missing-slots: false
+  missed-audits-before-free: 2
+
+registry:
+  # Destroyed records are only kept this long. Active ones are never removed.
+  prune-destroyed-after-days: 30
+
+# --- Chat -----------------------------------------------------------------------------------------
+announce:
+  mace-crafted: true
+  mace-destroyed: true
+  notify-admins-of-problems: true   # duplicates removed, untracked Maces found, ...
+
+# %active% and %limit% are replaced. Use & for colour codes.
+messages:
+  prefix: "&8[&6MaceSMP&8] &7"
+  limit-reached: "&cThe Mace limit has been reached (%active%/%limit%). A Mace must be destroyed before another can be forged."
+  shift-click: "&cMaces cannot be shift-click crafted. Click the result normally."
+  repair: "&cMaces cannot be combined in the crafting grid. Use an anvil to repair them."
+  crafted: "&6A Mace has been forged! &7(%active%/%limit% in the world)"
+  destroyed: "&6A Mace has been destroyed. &7(%active%/%limit% in the world)"

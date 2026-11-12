@@ -1,0 +1,1 @@
+package org.bukkit.event.player; import org.bukkit.event.Event; import org.bukkit.inventory.ItemStack; public class PlayerItemBreakEvent extends Event { public ItemStack getBrokenItem(){return null;} }

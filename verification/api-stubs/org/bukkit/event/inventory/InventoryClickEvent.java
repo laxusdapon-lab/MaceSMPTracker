@@ -1,0 +1,2 @@
+package org.bukkit.event.inventory; import org.bukkit.event.*; import org.bukkit.entity.HumanEntity; import org.bukkit.inventory.ItemStack;
+public class InventoryClickEvent extends Event implements Cancellable { public ItemStack getCurrentItem(){return null;} public boolean isShiftClick(){return false;} public HumanEntity getWhoClicked(){return null;} public boolean isCancelled(){return false;} public void setCancelled(boolean c){} }
