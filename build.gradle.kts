@@ -24,3 +24,6 @@ java {
 tasks.jar {
     archiveBaseName.set("MaceSMPTracker")
 }
+tasks.test {
+    failOnNoDiscoveredTests = false
+}
